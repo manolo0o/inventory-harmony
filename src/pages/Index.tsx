@@ -1,16 +1,21 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { AppSidebar } from "@/components/AppSidebar";
+import { TopBar } from "@/components/TopBar";
+import { KPICards } from "@/components/KPICards";
+import { InventoryTable } from "@/components/InventoryTable";
 
-// IMPORTANT: Fully REPLACE this with your own code
-const PlaceholderIndex = () => {
-  // PLACEHOLDER: Replace this entire return statement with the user's app.
-  // The inline background color is intentionally not part of the design system.
+const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center" style={{ backgroundColor: '#fcfbf8' }}>
-      <img data-lovable-blank-page-placeholder="REMOVE_THIS" src="/placeholder.svg" alt="Your app will live here!" />
+    <div className="flex min-h-screen w-full">
+      <AppSidebar />
+      <div className="flex-1 flex flex-col min-w-0">
+        <TopBar />
+        <main className="flex-1 p-6 space-y-6 overflow-auto">
+          <KPICards />
+          <InventoryTable />
+        </main>
+      </div>
     </div>
   );
 };
-
-const Index = PlaceholderIndex;
 
 export default Index;
