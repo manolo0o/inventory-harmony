@@ -7,7 +7,7 @@ const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
   { icon: Package, label: "Inventory", path: "/dashboard" },
   { icon: ShoppingCart, label: "Orders", path: "/dashboard" },
-  { icon: Settings, label: "Settings", path: "/dashboard" },
+  { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
 export function AppSidebar() {
