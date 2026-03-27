@@ -1,66 +1,67 @@
-import { useState } from "react";
 import { AppSidebar } from "@/components/AppSidebar";
-import { TopBar } from "@/components/TopBar";
 import { DashboardKPICards } from "@/components/DashboardKPICards";
-import { DashboardInventoryTable } from "@/components/DashboardInventoryTable";
-import { ProductFormModal } from "@/components/ProductFormModal";
-import { DeleteConfirmDialog } from "@/components/DeleteConfirmDialog";
-import { useInventory, type InventoryItem } from "@/hooks/useInventory";
+import { InventoryCharts } from "@/components/InventoryCharts";
+import { useInventory } from "@/hooks/useInventory";
+import { Bell } from "lucide-react";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
+import { useNavigate } from "react-router-dom";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 export default function Dashboard() {
-  const { items, loading, addItem, updateItem, deleteItem } = useInventory();
-  const [formOpen, setFormOpen] = useState(false);
-  const [editItem, setEditItem] = useState<InventoryItem | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<InventoryItem | null>(null);
+  const { items } = useInventory();
+  const { user, signOut } = useAuth();
+  const navigate = useNavigate();
 
-  const handleEdit = (item: InventoryItem) => {
-    setEditItem(item);
-    setFormOpen(true);
-  };
+  const initials = user?.email
+    ? user.email.substring(0, 2).toUpperCase()
+    : "??";
 
-  const handleFormSubmit = async (data: any) => {
-    if (editItem) {
-      return await updateItem(editItem.id, data);
-    }
-    return await addItem(data);
-  };
-
-  const handleDelete = async () => {
-    if (deleteTarget) {
-      await deleteItem(deleteTarget.id);
-      setDeleteTarget(null);
-    }
+  const handleSignOut = async () => {
+    await signOut();
+    navigate("/login", { replace: true });
   };
 
   return (
     <div className="flex min-h-screen w-full">
       <AppSidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar onAddProduct={() => { setEditItem(null); setFormOpen(true); }} />
+        <header className="h-16 bg-card border-b border-border flex items-center justify-between px-6 shrink-0">
+          <div className="text-sm text-foreground font-medium">Dashboard</div>
+          <div className="flex items-center gap-4">
+            <button className="relative p-2 rounded-lg hover:bg-accent transition-colors">
+              <Bell className="h-5 w-5 text-muted-foreground" />
+            </button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <button className="flex items-center gap-2.5 pl-2 border-l border-border">
+                  <Avatar className="h-8 w-8">
+                    <AvatarFallback className="bg-primary text-primary-foreground text-xs font-semibold">
+                      {initials}
+                    </AvatarFallback>
+                  </Avatar>
+                  <span className="text-sm font-medium text-foreground max-w-[150px] truncate">
+                    {user?.email}
+                  </span>
+                </button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={handleSignOut}>Sign Out</DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+          </div>
+        </header>
+
         <main className="flex-1 p-6 space-y-6 overflow-auto">
           <DashboardKPICards items={items} />
-          <DashboardInventoryTable
-            items={items}
-            loading={loading}
-            onEdit={handleEdit}
-            onDelete={setDeleteTarget}
-          />
+          <InventoryCharts items={items} />
         </main>
       </div>
-
-      <ProductFormModal
-        open={formOpen}
-        onOpenChange={(open) => { setFormOpen(open); if (!open) setEditItem(null); }}
-        onSubmit={handleFormSubmit}
-        editItem={editItem}
-      />
-
-      <DeleteConfirmDialog
-        open={!!deleteTarget}
-        onOpenChange={(open) => { if (!open) setDeleteTarget(null); }}
-        onConfirm={handleDelete}
-        productName={deleteTarget?.product_name || ""}
-      />
     </div>
   );
 }
