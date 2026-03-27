@@ -31,7 +31,7 @@ export function AppSidebar() {
 
       <nav className="flex-1 px-3 space-y-1">
         {navItems.map((item) => {
-          const active = location.pathname === item.path && item.label === "Dashboard";
+          const active = location.pathname === item.path;
           return (
             <button
               key={item.label}
