@@ -1,12 +1,11 @@
-import { LayoutDashboard, Package, ShoppingCart, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
   { icon: LayoutDashboard, label: "Dashboard", path: "/dashboard" },
-  { icon: Package, label: "Inventory", path: "/dashboard" },
-  { icon: ShoppingCart, label: "Orders", path: "/dashboard" },
+  { icon: Package, label: "Inventory", path: "/inventory" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
 
