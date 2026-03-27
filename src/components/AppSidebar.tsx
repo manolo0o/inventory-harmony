@@ -1,4 +1,4 @@
-import { LayoutDashboard, Package, ShoppingCart, Settings, LogOut } from "lucide-react";
+import { LayoutDashboard, Package, Settings, LogOut } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useAuth } from "@/contexts/AuthContext";
 import { useNavigate, useLocation } from "react-router-dom";
