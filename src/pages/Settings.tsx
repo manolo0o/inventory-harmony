@@ -69,10 +69,10 @@ export default function Settings() {
                       <div className="flex items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
                           <Label htmlFor="alerts-enabled" className="text-base font-medium">
-                            Enable WhatsApp Alerts
+                            Enable Email Alerts
                           </Label>
                           <p className="text-sm text-muted-foreground">
-                            Toggle automatic low-stock notifications
+                            Toggle automatic low-stock email notifications
                           </p>
                         </div>
                         <Switch
