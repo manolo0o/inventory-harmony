@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Bell, Save } from "lucide-react";
+import { Bell, Save, Mail } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 
 export default function Settings() {
