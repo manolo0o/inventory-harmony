@@ -15,7 +15,7 @@ interface Props {
   showAddProduct?: boolean;
 }
 
-export function TopBar({ onAddProduct }: Props) {
+export function TopBar({ onAddProduct, showAddProduct = true }: Props) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
