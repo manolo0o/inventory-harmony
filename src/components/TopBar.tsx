@@ -12,9 +12,10 @@ import {
 
 interface Props {
   onAddProduct: () => void;
+  showAddProduct?: boolean;
 }
 
-export function TopBar({ onAddProduct }: Props) {
+export function TopBar({ onAddProduct, showAddProduct = true }: Props) {
   const { user, signOut } = useAuth();
   const navigate = useNavigate();
 
@@ -54,10 +55,12 @@ export function TopBar({ onAddProduct }: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button size="sm" className="gap-1.5" onClick={onAddProduct}>
-          <Plus className="h-4 w-4" />
-          Add New Product
-        </Button>
+        {showAddProduct && (
+          <Button size="sm" className="gap-1.5" onClick={onAddProduct}>
+            <Plus className="h-4 w-4" />
+            Add New Product
+          </Button>
+        )}
       </div>
     </header>
   );

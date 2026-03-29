@@ -30,15 +30,16 @@ const COLORS = [
 ];
 
 export function InventoryCharts({ items }: Props) {
-  // Stock by category
+  // Stock by category — show ALL categories
   const categoryData = useMemo(() => {
     const map = new Map<string, { count: number; totalQty: number; totalValue: number }>();
     items.forEach((item) => {
-      const existing = map.get(item.category) || { count: 0, totalQty: 0, totalValue: 0 };
+      const cat = item.category || "Uncategorized";
+      const existing = map.get(cat) || { count: 0, totalQty: 0, totalValue: 0 };
       existing.count += 1;
       existing.totalQty += item.quantity;
       existing.totalValue += item.quantity * item.unit_price;
-      map.set(item.category, existing);
+      map.set(cat, existing);
     });
     return Array.from(map.entries())
       .map(([name, data]) => ({ name, ...data }))
@@ -102,24 +103,35 @@ export function InventoryCharts({ items }: Props) {
       {/* Stock Status Distribution */}
       <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
         <h3 className="text-sm font-semibold text-foreground mb-4">Stock Status Distribution</h3>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={320}>
           <PieChart>
             <Pie
               data={statusData}
               cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={100}
+              cy="45%"
+              innerRadius={50}
+              outerRadius={85}
               paddingAngle={4}
               dataKey="value"
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent, x, y, midAngle }) => {
+                const RADIAN = Math.PI / 180;
+                const radius = 105;
+                const lx = 0 + radius * Math.cos(-midAngle * RADIAN);
+                const ly = 0 + radius * Math.sin(-midAngle * RADIAN);
+                return (
+                  <text x={x} y={y} textAnchor={x > 0 ? "start" : "end"} dominantBaseline="central" style={{ fontSize: "12px", fill: "hsl(215, 10%, 40%)" }}>
+                    {`${name} ${(percent * 100).toFixed(0)}%`}
+                  </text>
+                );
+              }}
+              labelLine={true}
             >
               {statusData.map((entry, index) => (
                 <Cell key={index} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(215, 20%, 90%)", fontSize: "13px" }} />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>

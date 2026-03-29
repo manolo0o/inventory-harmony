@@ -38,7 +38,7 @@ export default function Settings() {
     <div className="flex min-h-screen w-full">
       <AppSidebar />
       <div className="flex-1 flex flex-col min-w-0">
-        <TopBar onAddProduct={() => {}} />
+        <TopBar onAddProduct={() => {}} showAddProduct={false} />
         <main className="flex-1 p-6 overflow-auto">
           <h2 className="text-2xl font-bold tracking-tight mb-6">Settings</h2>
 
