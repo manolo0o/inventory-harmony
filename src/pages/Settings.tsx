@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
-import { Bell, Save } from "lucide-react";
+import { Bell, Save, Mail } from "lucide-react";
 import { useAppSettings } from "@/hooks/useAppSettings";
 
 export default function Settings() {
@@ -53,10 +53,10 @@ export default function Settings() {
             <TabsContent value="notifications">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">WhatsApp Low-Stock Alerts</CardTitle>
+                  <CardTitle className="text-lg">Email Low-Stock Alerts</CardTitle>
                   <CardDescription>
-                    Receive a WhatsApp message when any product drops below the
-                    stock threshold.
+                    Receive an email when any product drops below the
+                    stock threshold (powered by Resend).
                   </CardDescription>
                 </CardHeader>
 
@@ -69,10 +69,10 @@ export default function Settings() {
                       <div className="flex items-center justify-between rounded-lg border p-4">
                         <div className="space-y-0.5">
                           <Label htmlFor="alerts-enabled" className="text-base font-medium">
-                            Enable WhatsApp Alerts
+                            Enable Email Alerts
                           </Label>
                           <p className="text-sm text-muted-foreground">
-                            Toggle automatic low-stock notifications
+                            Toggle automatic low-stock email notifications
                           </p>
                         </div>
                         <Switch
@@ -82,18 +82,18 @@ export default function Settings() {
                         />
                       </div>
 
-                      {/* Admin phone */}
+                      {/* Admin email */}
                       <div className="space-y-2">
-                        <Label htmlFor="admin-phone">Admin WhatsApp Number</Label>
+                        <Label htmlFor="admin-email">Admin Email Address</Label>
                         <Input
-                          id="admin-phone"
-                          type="tel"
-                          placeholder="+573001234567"
+                          id="admin-email"
+                          type="email"
+                          placeholder="admin@example.com"
                           value={phone}
                           onChange={(e) => setPhone(e.target.value)}
                         />
                         <p className="text-xs text-muted-foreground">
-                          Include country code, e.g. +1 for US, +57 for Colombia
+                          Low-stock alert emails will be sent to this address
                         </p>
                       </div>
 
