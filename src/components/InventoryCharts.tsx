@@ -30,15 +30,16 @@ const COLORS = [
 ];
 
 export function InventoryCharts({ items }: Props) {
-  // Stock by category
+  // Stock by category — show ALL categories
   const categoryData = useMemo(() => {
     const map = new Map<string, { count: number; totalQty: number; totalValue: number }>();
     items.forEach((item) => {
-      const existing = map.get(item.category) || { count: 0, totalQty: 0, totalValue: 0 };
+      const cat = item.category || "Uncategorized";
+      const existing = map.get(cat) || { count: 0, totalQty: 0, totalValue: 0 };
       existing.count += 1;
       existing.totalQty += item.quantity;
       existing.totalValue += item.quantity * item.unit_price;
-      map.set(item.category, existing);
+      map.set(cat, existing);
     });
     return Array.from(map.entries())
       .map(([name, data]) => ({ name, ...data }))
