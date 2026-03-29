@@ -1,10 +1,9 @@
 // Supabase Edge Function: notify-low-stock
-// Sends a WhatsApp "Low Stock Alert" via Meta Graph API when inventory drops below threshold.
+// Sends a "Low Stock Alert" email via Resend when inventory drops below threshold.
 //
 // Deploy: This function is automatically deployed by Lovable.
 // Secrets required (set in Supabase Dashboard > Settings > Edge Functions):
-//   - WHATSAPP_TOKEN: Meta WhatsApp Business API bearer token
-//   - PHONE_NUMBER_ID: Your WhatsApp Business phone number ID from Meta
+//   - RESEND_API_KEY: Your Resend API key from https://resend.com/api-keys
 
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -23,7 +22,6 @@ interface InventoryPayload {
 }
 
 Deno.serve(async (req) => {
-  // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
   }
@@ -69,60 +67,63 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Retrieve WhatsApp API credentials from secrets
-    const WHATSAPP_TOKEN = Deno.env.get("WHATSAPP_TOKEN");
-    if (!WHATSAPP_TOKEN) {
-      throw new Error("WHATSAPP_TOKEN secret is not configured");
+    // Retrieve Resend API key
+    const RESEND_API_KEY = Deno.env.get("RESEND_API_KEY");
+    if (!RESEND_API_KEY) {
+      throw new Error("RESEND_API_KEY secret is not configured");
     }
 
-    const PHONE_NUMBER_ID = Deno.env.get("PHONE_NUMBER_ID");
-    if (!PHONE_NUMBER_ID) {
-      throw new Error("PHONE_NUMBER_ID secret is not configured");
-    }
+    const adminEmail = settings.admin_phone; // field reused for admin email
 
-    // Format phone number: remove any non-digit chars except leading +
-    const adminPhone = settings.admin_phone.replace(/[^\d]/g, "");
-
-    // Send WhatsApp template message via Meta Graph API
-    const whatsappUrl = `https://graph.facebook.com/v18.0/${PHONE_NUMBER_ID}/messages`;
-
-    const response = await fetch(whatsappUrl, {
+    // Send email via Resend API
+    const response = await fetch("https://api.resend.com/emails", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${WHATSAPP_TOKEN}`,
+        Authorization: `Bearer ${RESEND_API_KEY}`,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        messaging_product: "whatsapp",
-        to: adminPhone,
-        type: "template",
-        template: {
-          name: "low_stock_alert",
-          language: { code: "en" },
-          components: [
-            {
-              type: "body",
-              parameters: [
-                { type: "text", text: record.product_name },
-                { type: "text", text: record.sku },
-                { type: "text", text: String(record.quantity) },
-              ],
-            },
-          ],
-        },
+        from: "Inventory Alerts <onboarding@resend.dev>",
+        to: [adminEmail],
+        subject: `⚠️ Low Stock Alert: ${record.product_name}`,
+        html: `
+          <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+            <h2 style="color: #dc2626; margin-bottom: 16px;">⚠️ Low Stock Alert</h2>
+            <p style="color: #374151; font-size: 16px;">A product in your inventory has dropped below the alert threshold.</p>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+              <tr style="background: #f9fafb;">
+                <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: 600; color: #374151;">Product</td>
+                <td style="padding: 12px; border: 1px solid #e5e7eb; color: #111827;">${record.product_name}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: 600; color: #374151;">SKU</td>
+                <td style="padding: 12px; border: 1px solid #e5e7eb; color: #111827;">${record.sku}</td>
+              </tr>
+              <tr style="background: #f9fafb;">
+                <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: 600; color: #374151;">Current Quantity</td>
+                <td style="padding: 12px; border: 1px solid #e5e7eb; color: #dc2626; font-weight: 700;">${record.quantity}</td>
+              </tr>
+              <tr>
+                <td style="padding: 12px; border: 1px solid #e5e7eb; font-weight: 600; color: #374151;">Threshold</td>
+                <td style="padding: 12px; border: 1px solid #e5e7eb; color: #111827;">${settings.alert_threshold}</td>
+              </tr>
+            </table>
+            <p style="color: #6b7280; font-size: 14px;">Please restock this item as soon as possible.</p>
+          </div>
+        `,
       }),
     });
 
     const result = await response.json();
 
     if (!response.ok) {
-      console.error(`WhatsApp API error [${response.status}]:`, JSON.stringify(result));
-      throw new Error(`WhatsApp API call failed [${response.status}]: ${JSON.stringify(result)}`);
+      console.error(`Resend API error [${response.status}]:`, JSON.stringify(result));
+      throw new Error(`Resend API call failed [${response.status}]: ${JSON.stringify(result)}`);
     }
 
-    console.log("WhatsApp alert sent successfully:", JSON.stringify(result));
+    console.log("Email alert sent successfully:", JSON.stringify(result));
 
-    return new Response(JSON.stringify({ success: true, whatsapp: result }), {
+    return new Response(JSON.stringify({ success: true, email: result }), {
       status: 200,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     });
