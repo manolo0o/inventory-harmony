@@ -12,6 +12,7 @@ import {
 
 interface Props {
   onAddProduct: () => void;
+  showAddProduct?: boolean;
 }
 
 export function TopBar({ onAddProduct }: Props) {
