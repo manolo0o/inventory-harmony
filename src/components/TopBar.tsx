@@ -55,10 +55,12 @@ export function TopBar({ onAddProduct, showAddProduct = true }: Props) {
           </DropdownMenuContent>
         </DropdownMenu>
 
-        <Button size="sm" className="gap-1.5" onClick={onAddProduct}>
-          <Plus className="h-4 w-4" />
-          Add New Product
-        </Button>
+        {showAddProduct && (
+          <Button size="sm" className="gap-1.5" onClick={onAddProduct}>
+            <Plus className="h-4 w-4" />
+            Add New Product
+          </Button>
+        )}
       </div>
     </header>
   );

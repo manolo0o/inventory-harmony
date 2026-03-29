@@ -103,24 +103,35 @@ export function InventoryCharts({ items }: Props) {
       {/* Stock Status Distribution */}
       <div className="bg-card rounded-xl border border-border p-5 shadow-sm">
         <h3 className="text-sm font-semibold text-foreground mb-4">Stock Status Distribution</h3>
-        <ResponsiveContainer width="100%" height={280}>
+        <ResponsiveContainer width="100%" height={320}>
           <PieChart>
             <Pie
               data={statusData}
               cx="50%"
-              cy="50%"
-              innerRadius={60}
-              outerRadius={100}
+              cy="45%"
+              innerRadius={50}
+              outerRadius={85}
               paddingAngle={4}
               dataKey="value"
-              label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
+              label={({ name, percent, x, y, midAngle }) => {
+                const RADIAN = Math.PI / 180;
+                const radius = 105;
+                const lx = 0 + radius * Math.cos(-midAngle * RADIAN);
+                const ly = 0 + radius * Math.sin(-midAngle * RADIAN);
+                return (
+                  <text x={x} y={y} textAnchor={x > 0 ? "start" : "end"} dominantBaseline="central" style={{ fontSize: "12px", fill: "hsl(215, 10%, 40%)" }}>
+                    {`${name} ${(percent * 100).toFixed(0)}%`}
+                  </text>
+                );
+              }}
+              labelLine={true}
             >
               {statusData.map((entry, index) => (
                 <Cell key={index} fill={entry.color} />
               ))}
             </Pie>
             <Tooltip contentStyle={{ borderRadius: "8px", border: "1px solid hsl(215, 20%, 90%)", fontSize: "13px" }} />
-            <Legend />
+            <Legend wrapperStyle={{ fontSize: "12px", paddingTop: "10px" }} />
           </PieChart>
         </ResponsiveContainer>
       </div>
