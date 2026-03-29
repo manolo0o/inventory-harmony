@@ -53,10 +53,10 @@ export default function Settings() {
             <TabsContent value="notifications">
               <Card>
                 <CardHeader>
-                  <CardTitle className="text-lg">WhatsApp Low-Stock Alerts</CardTitle>
+                  <CardTitle className="text-lg">Email Low-Stock Alerts</CardTitle>
                   <CardDescription>
-                    Receive a WhatsApp message when any product drops below the
-                    stock threshold.
+                    Receive an email when any product drops below the
+                    stock threshold (powered by Resend).
                   </CardDescription>
                 </CardHeader>
 
