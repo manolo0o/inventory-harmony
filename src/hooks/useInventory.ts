@@ -70,27 +70,45 @@ export function useInventory() {
     };
   }, [user, fetchItems]);
 
+  const checkLowStock = async (record: { id: string; product_name: string; sku: string; quantity: number; user_id: string }) => {
+    try {
+      await supabase.functions.invoke("notify-low-stock", {
+        body: { record },
+      });
+    } catch (err) {
+      console.error("Low stock check failed:", err);
+    }
+  };
+
   const addItem = async (data: InventoryFormData) => {
     if (!user) return;
-    const { error } = await supabase.from("inventory").insert({
+    const { data: inserted, error } = await supabase.from("inventory").insert({
       ...data,
       user_id: user.id,
-    });
+    }).select().single();
     if (error) {
       toast({ title: "Error adding product", description: error.message, variant: "destructive" });
       return false;
     }
     toast({ title: "Product added successfully" });
+    await fetchItems();
+    if (inserted) {
+      checkLowStock({ id: inserted.id, product_name: inserted.product_name, sku: inserted.sku, quantity: inserted.quantity, user_id: inserted.user_id });
+    }
     return true;
   };
 
   const updateItem = async (id: string, data: InventoryFormData) => {
-    const { error } = await supabase.from("inventory").update(data).eq("id", id);
+    const { data: updated, error } = await supabase.from("inventory").update(data).eq("id", id).select().single();
     if (error) {
       toast({ title: "Error updating product", description: error.message, variant: "destructive" });
       return false;
     }
     toast({ title: "Product updated successfully" });
+    await fetchItems();
+    if (updated) {
+      checkLowStock({ id: updated.id, product_name: updated.product_name, sku: updated.sku, quantity: updated.quantity, user_id: updated.user_id });
+    }
     return true;
   };
 
@@ -101,6 +119,7 @@ export function useInventory() {
       return false;
     }
     toast({ title: "Product deleted successfully" });
+    await fetchItems();
     return true;
   };
 
